@@ -12,19 +12,19 @@ public class PropertyPK implements Serializable {
         this.otrsTicketId = otrsTicketId;
     }
 
-    public Long getErrorsEntityId() {
+    public Long getId() {
         return errorsEntityId;
     }
 
-    public void setErrorsEntityId(Long errorsEntityId) {
+    public void setId(Long errorsEntityId) {
         this.errorsEntityId = errorsEntityId;
     }
 
-    public Long getOtrsTicketId() {
+    public Long getTicketId() {
         return otrsTicketId;
     }
 
-    public void setOtrsTicketId(Long otrsTicketId) {
+    public void setTicketId(Long otrsTicketId) {
         this.otrsTicketId = otrsTicketId;
     }
 
