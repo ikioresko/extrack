@@ -8,7 +8,7 @@ import java.util.List;
 
 @Repository
 public interface FilterEntityRepo extends CrudRepository<FilterEntity, Long> {
-    List<FilterEntityRepo> findAllByType(String type);
+    List<FilterEntity> findAllByType(String type);
 
     Long countFilterEntityRepoByTypeContaining(String equal);
 }

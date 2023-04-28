@@ -1,5 +1,6 @@
 package com.home.extrack.database;
 
+import com.home.extrack.entity.FilterEntity;
 import com.home.extrack.repository.FilterEntityRepo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,7 +17,7 @@ public class FiltersDB {
     }
 
     @Transactional(readOnly = true)
-    public List<FilterEntityRepo> findAllByType(String type) {
+    public List<FilterEntity> findAllByType(String type) {
         return filterEntityRepo.findAllByType(type);
     }
 
