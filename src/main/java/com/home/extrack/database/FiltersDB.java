@@ -22,7 +22,7 @@ public class FiltersDB {
     }
 
     @Transactional(readOnly = true)
-    public Long getRegexpTableSize() {
-        return filterEntityRepo.countFilterEntityRepoByTypeContaining("regexp");
+    public Long getRegexpTableSizeByType(String type) {
+        return filterEntityRepo.countFilterEntityRepoByTypeContaining(type);
     }
 }

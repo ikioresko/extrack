@@ -42,7 +42,7 @@ public class RegexPool {
      */
     @Scheduled(fixedDelay = 60000)
     protected void checkErrorsEntityDataBaseSize() {
-        long dataBaseSize = filtersDB.getRegexpTableSize();
+        long dataBaseSize = filtersDB.getRegexpTableSizeByType("regexp");
         if (mapRegex.size() != dataBaseSize) {
             listInit();
         }
