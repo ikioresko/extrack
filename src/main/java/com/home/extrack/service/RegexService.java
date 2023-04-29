@@ -12,10 +12,10 @@ import java.util.regex.Pattern;
 
 @Service
 public class RegexService {
-    private final RegexMemPool regexMemPool;
+    private final RegexPool regexPool;
 
-    public RegexService(RegexMemPool regexMemPool) {
-        this.regexMemPool = regexMemPool;
+    public RegexService(RegexPool regexPool) {
+        this.regexPool = regexPool;
     }
 
     /**
@@ -26,7 +26,7 @@ public class RegexService {
     public Long regexSearch(String errorItem) {
         String error = errorItem.replaceAll(System.lineSeparator(), "\n");
         List<Long> regexId = new ArrayList<>();
-        ConcurrentHashMap<Long, Pattern> patternMap = regexMemPool.getMap();
+        ConcurrentHashMap<Long, Pattern> patternMap = regexPool.getMap();
         Matcher matcher;
         for (Map.Entry<Long, Pattern> entry : patternMap.entrySet()) {
             matcher = entry.getValue().matcher(error);

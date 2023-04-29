@@ -12,11 +12,11 @@ import java.util.regex.Pattern;
 
 @Service
 @Slf4j
-public class RegexMemPool {
+public class RegexPool {
     private static final ConcurrentHashMap<Long, Pattern> mapRegex = new ConcurrentHashMap<>(500);
     private final FiltersDB filtersDB;
 
-    public RegexMemPool(FiltersDB filtersDB) {
+    public RegexPool(FiltersDB filtersDB) {
         this.filtersDB = filtersDB;
     }
 
