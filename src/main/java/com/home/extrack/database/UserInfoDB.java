@@ -1,20 +1,20 @@
 package com.home.extrack.database;
 
-import com.home.extrack.entity.User;
-import com.home.extrack.repository.UserRepo;
+import com.home.extrack.entity.InfoEntity;
+import com.home.extrack.repository.InfoEntityRepo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UserInfoDB {
-    private final UserRepo userRepo;
+    private final InfoEntityRepo infoEntityRepo;
 
-    public UserInfoDB(UserRepo userRepo) {
-        this.userRepo = userRepo;
+    public UserInfoDB(InfoEntityRepo infoEntityRepo) {
+        this.infoEntityRepo = infoEntityRepo;
     }
 
     @Transactional
-    public User save(User entity) {
-        return userRepo.save(entity);
+    public InfoEntity save(InfoEntity entity) {
+        return infoEntityRepo.save(entity);
     }
 }
