@@ -6,16 +6,22 @@ import java.util.Objects;
 public class AddErrorModel {
     private final String errorItem;
     private final String code;
+    private final String type;
+    private final String ticket;
+    private final String userName;
     private final Timestamp time;
     private final String orderNumber;
     private final String integrationId;
     private final String uid;
 
 
-    public AddErrorModel(String errorItem, String code, Timestamp time, String orderNumber,
-                         String integrationId, String uid) {
+    public AddErrorModel(String errorItem, String code, String type, String ticket, String userName,
+                         Timestamp time, String orderNumber, String integrationId, String uid) {
         this.errorItem = errorItem;
         this.code = code;
+        this.type = type;
+        this.ticket = ticket;
+        this.userName = userName;
         this.time = time;
         this.orderNumber = orderNumber;
         this.integrationId = integrationId;
@@ -29,6 +35,18 @@ public class AddErrorModel {
 
     public String getCode() {
         return code;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public String getTicket() {
+        return ticket;
+    }
+
+    public String getUserName() {
+        return userName;
     }
 
     public Timestamp getTime() {
