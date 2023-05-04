@@ -74,13 +74,15 @@ public class AddErrorModel {
             return false;
         }
         AddErrorModel that = (AddErrorModel) o;
-        return Objects.equals(errorItem, that.errorItem) && Objects.equals(code, that.code)
+        return Objects.equals(errorItem, that.errorItem)
+                && Objects.equals(code, that.code) && Objects.equals(type, that.type)
+                && Objects.equals(ticket, that.ticket) && Objects.equals(userName, that.userName)
                 && Objects.equals(time, that.time) && Objects.equals(orderNumber, that.orderNumber)
                 && Objects.equals(integrationId, that.integrationId) && Objects.equals(uid, that.uid);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(errorItem, code, time, orderNumber, integrationId, uid);
+        return Objects.hash(errorItem, code, type, ticket, userName, time, orderNumber, integrationId, uid);
     }
 }
