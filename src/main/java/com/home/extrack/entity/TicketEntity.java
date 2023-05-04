@@ -18,10 +18,8 @@ public class TicketEntity {
     private final AtomicInteger count = new AtomicInteger(1);
 
     public TicketEntity(Long ticketID,
-                        Long ticketNumber,
                         Long errorId) {
         this.ticketID = ticketID;
-        this.ticketNumber = ticketNumber;
         this.errorId = errorId;
     }
 
