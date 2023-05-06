@@ -22,6 +22,11 @@ public class ErrorsEntity {
     public ErrorsEntity() {
     }
 
+    public ErrorsEntity(String errorItem, String type) {
+        this.errorItem = errorItem;
+        this.type = type;
+    }
+
     public Long getId() {
         return id;
     }
