@@ -16,6 +16,12 @@ public class InfoEntity {
     public InfoEntity() {
     }
 
+    public InfoEntity(String orderNumber, String userName, String ticket) {
+        this.orderNumber = orderNumber;
+        this.userName = userName;
+        this.ticket = ticket;
+    }
+
     public String getTicket() {
         return ticket;
     }
