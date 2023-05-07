@@ -67,7 +67,75 @@ public class ErrorsServices {
         return dtoPool.addToMapErrorDTO(dto);
     }
 
-
+    /**
+     * Main thought logic for service
+     *
+     * @param addErrorModel parameters from service
+     * @return ticket data or replacement text
+     * @throws Exception Exception
+     */
+    public ResponseEntity<Object> errorWorker(AddErrorModel addErrorModel) throws Exception {
+        checkWorkTime();
+        ResponseEntity<Object> response = ResponseEntity.ok("");
+        Map<String, String> returnData = new HashMap<>();
+        var userInfo = createUserInfoEntityFromAddErrorModel(addErrorModel);
+        var errorItem = addErrorModel.getErrorItem().replaceAll("\\n", ",");
+        if (errorItem.length() <= 1) {
+            return ResponseEntity.ok("error text is empty");
+        }
+        Long errorId = filterService.filter(errorItem);
+        ErrorsEntity errorFromDB = errorId == null ? null : errorsDB.findById(errorId).get();
+        if (errorFromDB == null) {
+            log.info("Error service find that's it is a new error");
+            ErrorsEntity errorRecodedInDB = errorsDB.save(new ErrorsEntity(
+                    errorItem, addErrorModel.getType()));
+            Long errorID = errorRecodedInDB.getId();
+            TicketDTO ticketDTO = createTicketDTO(errorID, errorItem, addErrorModel);
+            TicketEntity ticketEntity = ticketService.openTicketInOTRS(ticketDTO);
+            userInfo.setId(errorID);
+            userInfo.setTicket(ticketEntity.getTicketID().toString());
+            userInfo.setId(errorID);
+            userInfoDB.save(userInfo);
+            errorsDB.save(errorRecodedInDB);
+            setReturnData(returnData, ticketEntity.getTicketNumber().toString(),
+                    ticketEntity.getTicketID().toString(), String.valueOf(errorID));
+            response = ResponseEntity.ok(returnData);
+        } else if (!errorFromDB.getIgnore()) {
+            if (checkErrorDTO(new ErrorDTO(errorId, addErrorModel.getUserName()))) {
+                if (errorFromDB.getCheckTicketCreate() && errorFromDB.getReplaceEntities() == null) {
+                    TicketEntity ticketEntity = saveErrorAndOpenTicket(errorItem, addErrorModel, errorFromDB, userInfo);
+                    setReturnData(returnData, ticketEntity.getTicketNumber().toString(),
+                            ticketEntity.getTicketID().toString(), String.valueOf(errorId));
+                    response = ResponseEntity.ok(returnData);
+                } else if (errorFromDB.getCheckTicketCreate() && errorFromDB.getReplaceEntities() != null) {
+                    TicketEntity ticketEntity = saveErrorAndOpenTicket(errorItem, addErrorModel, errorFromDB, userInfo);
+                    setReturnData(returnData, ticketEntity.getTicketNumber().toString(),
+                            ticketEntity.getTicketID().toString(), String.valueOf(errorId),
+                            errorFromDB.getReplaceEntities().getReplacementText());
+                    response = ResponseEntity.ok(returnData);
+                } else if (!errorFromDB.getCheckTicketCreate() && errorFromDB.getReplaceEntities() != null) {
+                    errorFromDB.setCount((errorFromDB.getCount() + 1));
+                    userInfo.setId(errorId);
+                    userInfo.setTicket("-1");
+                    userInfoDB.save(userInfo);
+                    errorsDB.save(errorFromDB);
+                    returnData.put("replacementText", errorFromDB.getReplaceEntities().getReplacementText());
+                    returnData.put("errorId", String.valueOf(errorId));
+                    response = ResponseEntity.ok(returnData);
+                } else {
+                    userInfo.setId(errorId);
+                    userInfo.setTicket("-1");
+                    userInfoDB.save(userInfo);
+                    log.info("UNKNOWN CASE Error ID: {}", errorId);
+                }
+                saveInArchive(addErrorModel.getErrorItem(), addErrorModel.getType(), errorId);
+            }
+        } else {
+            errorFromDB.setCount((errorFromDB.getCount() + 1));
+            errorsDB.save(errorFromDB);
+        }
+        return response;
+    }
 
     /**
      * Save in archive
