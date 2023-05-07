@@ -125,6 +125,61 @@ public class ErrorsServices {
     }
 
     /**
+     * Load any entity to error entity
+     * Check ticket has already been created and apply any logic
+     * Send an info to service
+     *
+     * @param errorItem     error text
+     * @param addErrorModel any input parameters
+     * @param errorFromDB   error from DB
+     * @param userInfo      info
+     * @return TicketEntity
+     */
+    private TicketEntity saveErrorAndOpenTicket(String errorItem, AddErrorModel addErrorModel,
+                                                ErrorsEntity errorFromDB, InfoEntity userInfo)
+            throws Exception {
+        StringBuilder sbTechnicComments = new StringBuilder();
+        Set<CommentsEntity> technicCommentsEntity = errorFromDB.getComments();
+        if (!technicCommentsEntity.isEmpty()) {
+            technicCommentsEntity.forEach(comment -> sbTechnicComments
+                    .append(comment.getCommentText())
+                    .append(System.lineSeparator()));
+        }
+        Long ticketId;
+        TicketEntity ticketEntity;
+        ConcurrentHashMap<Long, TicketEntity> map = ticketPool.getMap();
+        Long errorId = errorFromDB.getId();
+        TicketDTO ticketDTO = createTicketDTO(errorId, errorItem, addErrorModel);
+        if (map.containsKey(errorId)) {
+            ticketEntity = map.get(errorId);
+            while (ticketEntity.getTicketID() == null) {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                ticketEntity = map.get(errorId);
+            }
+            int count = ticketEntity.getCount().incrementAndGet();
+            ticketId = ticketEntity.getId();
+            ticketService.addInExistingTicket(ticketDTO);
+            log.info("Error id = {}, add comment to ticket id = {}", errorId, ticketId);
+        } else {
+            map.put(errorId, new TicketEntity());
+            ticketEntity = ticketService.openTicketInOTRS(ticketDTO);
+            ticketId = ticketEntityDB.save(ticketEntity).getId();
+            map.put(errorId, ticketEntity);
+        }
+        errorFromDB.setCount((errorFromDB.getCount() + 1));
+        userInfo.setId(ticketEntity.getErrorId());
+        userInfo.setTicket(ticketEntity.getTicketID().toString());
+        userInfoDB.save(userInfo);
+        errorsDB.save(errorFromDB);
+        ticketEntityDB.save(new TicketEntity(errorId, ticketId));
+        return ticketEntity;
+    }
+
+    /**
      * Create TicketDTO
      *
      * @param errorId       error id
